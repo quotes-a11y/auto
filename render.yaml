@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: elevated-operations
+    runtime: node
+    region: oregon
+    plan: 0.5c-512mb
+    buildCommand: npm ci --include=dev && npm run check && npm test
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 24.19.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: elevated-operations-db
+          property: connectionString
+      - key: SETUP_TOKEN
+        generateValue: true
+
+databases:
+  - name: elevated-operations-db
+    databaseName: elevated_operations
+    user: elevated_operations
+    region: oregon
+    plan: 0.1c-256mb
+    diskSizeGB: 5
+    postgresMajorVersion: "18"
+    ipAllowList: []
